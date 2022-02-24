@@ -15,8 +15,10 @@ namespace UniversityThesis.Data
         public DbSet<Project> Project { get; set; }
         public DbSet<Student> Student { get; set; }
         public DbSet<Subject> Subject { get; set; }
+        
+        public DbSet<SubmissionDetail> SubmissionDetail { get; set; }
 
-        public DbSet<UserInfo> UserInfo { get; set; }
+        //public DbSet<UserInfo> UserInfo { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

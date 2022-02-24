@@ -10,8 +10,8 @@ using UniversityThesis.Data;
 namespace UniversityThesis.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220223072412_Initial")]
-    partial class Initial
+    [Migration("20220224082013_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -124,31 +124,20 @@ namespace UniversityThesis.Migrations
 
             modelBuilder.Entity("UniversityThesis.Models.Faculty", b =>
                 {
-                    b.Property<int>("FacultyId")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(10)
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FacultyName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FacultyType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<int?>("ProjectId")
+                    b.Property<int?>("SubjectId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Subjects")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("UserId");
 
-                    b.HasKey("FacultyId");
-
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("Faculty");
                 });
@@ -207,14 +196,16 @@ namespace UniversityThesis.Migrations
                         .HasColumnType("nvarchar(60)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("FacultyId")
-                        .HasColumnType("int");
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAdminUser")
                         .HasColumnType("bit");
@@ -233,8 +224,17 @@ namespace UniversityThesis.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Phone")
+                        .HasMaxLength(12)
+                        .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -245,19 +245,17 @@ namespace UniversityThesis.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StudentUserId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FacultyId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -266,8 +264,6 @@ namespace UniversityThesis.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("StudentUserId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -282,14 +278,14 @@ namespace UniversityThesis.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ProjectDecription")
+                    b.Property<string>("ProjectDescription")
                         .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("varchar");
 
-                    b.Property<string>("ProjectName")
+                    b.Property<string>("ProjectTitle")
                         .IsRequired()
                         .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(50)
@@ -299,35 +295,30 @@ namespace UniversityThesis.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("ProjectId");
 
-                    b.ToTable("Project");
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("UniversityThesis.Models.Student", b =>
                 {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DepartmentName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EnrollmentId")
-                        .HasMaxLength(10)
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("EnrollmentID")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("ParentName")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
@@ -336,53 +327,73 @@ namespace UniversityThesis.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Student");
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("UniversityThesis.Models.Subject", b =>
                 {
                     b.Property<int>("SubjectId")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(5)
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
 
+                    b.Property<string>("SubjectName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
                     b.HasKey("SubjectId");
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Subject");
+                    b.ToTable("Subjects");
                 });
 
-            modelBuilder.Entity("UniversityThesis.Models.UserInfo", b =>
+            modelBuilder.Entity("UniversityThesis.Models.SubmissionDetail", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("SubmissionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("EmailId")
+                    b.Property<int>("Remarks")
+                        .HasMaxLength(3)
+                        .HasColumnType("int")
+                        .HasColumnName("remark");
+
+                    b.Property<string>("ReviewOn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("Role")
+                    b.Property<string>("ReviewedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("SubmissionDesc")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)")
+                        .HasColumnName("varchar");
+
+                    b.Property<string>("SubmissionDueOn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.Property<string>("SubmissionFile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("UserInfo");
+                    b.Property<string>("SubmissionOn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubmissionId");
+
+                    b.ToTable("SubmissionDetails");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -438,24 +449,17 @@ namespace UniversityThesis.Migrations
 
             modelBuilder.Entity("UniversityThesis.Models.Faculty", b =>
                 {
-                    b.HasOne("UniversityThesis.Models.Project", null)
-                        .WithMany("Professors")
-                        .HasForeignKey("ProjectId");
-                });
+                    b.HasOne("UniversityThesis.Models.Subject", null)
+                        .WithMany("Faculty")
+                        .HasForeignKey("SubjectId");
 
-            modelBuilder.Entity("UniversityThesis.Models.MyIdentityUser", b =>
-                {
-                    b.HasOne("UniversityThesis.Models.Faculty", "Faculty")
-                        .WithMany()
-                        .HasForeignKey("FacultyId");
+                    b.HasOne("UniversityThesis.Models.MyIdentityUser", "User")
+                        .WithOne("Faculty")
+                        .HasForeignKey("UniversityThesis.Models.Faculty", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("UniversityThesis.Models.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentUserId");
-
-                    b.Navigation("Faculty");
-
-                    b.Navigation("Student");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UniversityThesis.Models.Student", b =>
@@ -463,6 +467,14 @@ namespace UniversityThesis.Migrations
                     b.HasOne("UniversityThesis.Models.Project", null)
                         .WithMany("Students")
                         .HasForeignKey("ProjectId");
+
+                    b.HasOne("UniversityThesis.Models.MyIdentityUser", "User")
+                        .WithOne("Student")
+                        .HasForeignKey("UniversityThesis.Models.Student", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UniversityThesis.Models.Subject", b =>
@@ -472,13 +484,23 @@ namespace UniversityThesis.Migrations
                         .HasForeignKey("ProjectId");
                 });
 
+            modelBuilder.Entity("UniversityThesis.Models.MyIdentityUser", b =>
+                {
+                    b.Navigation("Faculty");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("UniversityThesis.Models.Project", b =>
                 {
-                    b.Navigation("Professors");
-
                     b.Navigation("Students");
 
                     b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("UniversityThesis.Models.Subject", b =>
+                {
+                    b.Navigation("Faculty");
                 });
 #pragma warning restore 612, 618
         }
